@@ -147,7 +147,7 @@ async function fetchProviderUser(
     headers: {
       Authorization: `Bearer ${token}`,
       Accept: "application/json",
-      "User-Agent": "obsidian-git-sync/1.0",
+      "User-Agent": "vault-git-sync/1.0",
     },
     throw: true,
   });

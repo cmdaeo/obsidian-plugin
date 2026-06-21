@@ -1,3 +1,13 @@
+# Dependencies
 node_modules/
-main.js
-*.js.map
+
+# Build output — rebuilt by CI on every release
+release/
+
+# Dev artifacts
+*.map
+.DS_Store
+Thumbs.db
+
+# Let npm regenerate the lock file — prevents version mismatch errors in CI
+package-lock.json

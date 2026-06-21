@@ -1,9 +1,9 @@
 {
-  "id": "obsidian-git-sync",
-  "name": "Git Sync",
+  "id": "vault-git-sync",
+  "name": "Vault Git Sync",
   "version": "1.0.1",
   "minAppVersion": "1.5.0",
-  "description": "Secure, autonomous Git-based vault synchronization using isomorphic-git. No native binaries — works on Android and desktop.",
+  "description": "Local-first, cross-platform Git synchronization using isomorphic-git. No native binaries — works on desktop and Android.",
   "author": "cmdaeo",
   "authorUrl": "https://github.com/cmdaeo",
   "fundingUrl": "",

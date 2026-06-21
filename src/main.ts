@@ -60,7 +60,7 @@ export default class GitSyncPlugin extends Plugin {
         if (initResult.ok && this.settings.remoteUrl) {
           await engine.addRemote(this.settings);
         }
-        console.log("[GitSync] init:", initResult);
+        console.log("[VaultGitSync] init:", initResult);
       },
     });
 
@@ -71,7 +71,7 @@ export default class GitSyncPlugin extends Plugin {
         new CloneConfirmModal(this.app, async () => {
           const engine = new GitEngine(this.app.vault);
           const result = await engine.clone(this.settings);
-          console.log("[GitSync] clone:", result);
+          console.log("[VaultGitSync] clone:", result);
         }).open();
       },
     });

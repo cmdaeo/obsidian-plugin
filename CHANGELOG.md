@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Git Sync are documented here.
+All notable changes to Vault Git Sync are documented here.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [1.0.0] — 2026-06-21

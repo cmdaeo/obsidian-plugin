@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// types.ts — Shared types for Git Sync plugin
+// types.ts — Shared types for Vault Git Sync plugin
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface OAuthSession {

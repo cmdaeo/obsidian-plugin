@@ -1,4 +1,4 @@
-# Git Sync — Obsidian Plugin
+# Vault Git Sync
 
 Local-first, cross-platform Git synchronization for Obsidian.
 No proprietary cloud, no native binaries — works on Windows and Android.
@@ -14,29 +14,21 @@ No proprietary cloud, no native binaries — works on Windows and Android.
 ## Installation
 
 1. Download `main.js`, `manifest.json`, `styles.css` from the latest [GitHub release](https://github.com/cmdaeo/obsidian-plugin/releases)
-2. Copy to `.obsidian/plugins/obsidian-git-sync/` in your vault
+2. Copy to `.obsidian/plugins/vault-git-sync/` in your vault
 3. Enable in **Settings → Community Plugins**
 
 ## Setup
 
-1. **Settings → Git Sync**
+1. **Settings → Vault Git Sync**
 2. Set **Remote URL** (e.g. `https://github.com/user/vault.git`)
 3. Connect with **GitHub** (OAuth) or paste a **Personal Access Token**
-4. Run `Git Sync: Clone remote into vault` (first time)
-   or `Git Sync: Initialise repository` (existing vault)
+4. Run `Vault Git Sync: Clone remote into vault` (first time)
+   or `Vault Git Sync: Initialise repository` (existing vault)
 
 ## Releasing a new version
 
 ```sh
-# 1. Edit manifest.json version field
-# 2. Run version script
-npm run version
-
-# 3. Commit + tag + push
-git commit -m "chore: release 1.0.1"
-git tag 1.0.1
-git push && git push --tags
-# GitHub Actions builds and publishes the release automatically
+npm run release -- 1.0.1
 ```
 
 ## License
