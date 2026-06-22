@@ -92,7 +92,7 @@ export class GitEngine {
     try {
       await this.fs.promises.stat("/.gitignore");
     } catch {
-      await this.fs.promises.writeFile("/.gitignore", "# Default ignored files\n.obsidian/\n_System/\n", "utf8");
+      await this.fs.promises.writeFile("/.gitignore", `# Default ignored files\n${this.vault.configDir}/\n_System/\n`, "utf8");
     }
   }
 
@@ -109,7 +109,7 @@ export class GitEngine {
         content = (await this.fs.promises.readFile("/.gitignore", "utf8")).toString();
       } catch {
         // 3. Neither exists, use defaults
-        content = "# Default ignored files\n.obsidian/\n_System/\n";
+        content = `# Default ignored files\n${this.vault.configDir}/\n_System/\n`;
       }
       
       // Attempt to write the visible file so the user can see it
@@ -198,15 +198,29 @@ export class GitEngine {
     try {
       await this.ensureBranch(settings.branchName);
       const status = await git.statusMatrix({ fs: this.fs, dir: this.dir });
-      const changed = status.filter(([, head, workdir, stage]) => head !== 1 || workdir !== 1 || stage !== 1);
-      if (changed.length === 0) return { ok: true, message: "SKIPPED — nothing to commit." };
+      const changedOrIgnoredFiles: { filepath: string, action: "add" | "remove" }[] = [];
+
+      for (const [filepath, head, workdir, stage] of status) {
+        const isChanged = head !== 1 || workdir !== 1 || stage !== 1;
+        const ignored = await git.isIgnored({ fs: this.fs, dir: this.dir, filepath });
+        
+        if (ignored && head === 1) {
+          // It's tracked, but now it's ignored -> Untrack it
+          changedOrIgnoredFiles.push({ filepath, action: "remove" });
+        } else if (!ignored && isChanged) {
+          // It's changed and not ignored -> Add or remove depending on workdir
+          changedOrIgnoredFiles.push({ filepath, action: workdir === 0 ? "remove" : "add" });
+        }
+      }
+
+      if (changedOrIgnoredFiles.length === 0) return { ok: true, message: "SKIPPED — nothing to commit." };
 
       await Promise.all(
-        changed.map(async ([filepath, , workdir]) => {
-          if (workdir === 0) {
-            await git.remove({ fs: this.fs, dir: this.dir, filepath });
+        changedOrIgnoredFiles.map(async (f) => {
+          if (f.action === "remove") {
+            await git.remove({ fs: this.fs, dir: this.dir, filepath: f.filepath });
           } else {
-            await git.add({ fs: this.fs, dir: this.dir, filepath });
+            await git.add({ fs: this.fs, dir: this.dir, filepath: f.filepath });
           }
         })
       );
@@ -216,7 +230,7 @@ export class GitEngine {
         author: this.author(settings),
         message: message || `vault sync ${new Date().toISOString()}`,
       });
-      return { ok: true, message: `Committed ${changed.length} file(s).`, sha };
+      return { ok: true, message: `Committed ${changedOrIgnoredFiles.length} file(s).`, sha };
     } catch (e) { return { ok: false, error: toError(e) }; }
   }
 

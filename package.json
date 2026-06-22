@@ -1,6 +1,6 @@
 {
   "name": "yet-another-all-in-one",
-  "version": "1.1.2",
+  "version": "0.0.1",
   "description": "Yet Another All-In-One Obsidian plugin.",
   "main": "release/main.js",
   "scripts": {

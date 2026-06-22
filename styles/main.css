@@ -270,40 +270,54 @@
   margin-bottom: var(--size-2-2);
 }
 
+.git-sync-hidden {
+  display: none;
+}
+
+.git-sync-top-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--size-4-4);
+  padding: var(--size-4-2);
+  background: var(--background-secondary);
+  border-radius: var(--radius-m);
+  border: 1px solid var(--background-modifier-border);
+}
+
 .git-sync-center-cancel {
   justify-content: flex-end;
 }
 
-.git-sync-btn-danger {
-  background: hsl(0, 65%, 48%) !important;
-  color: white !important;
+button.git-sync-btn-danger {
+  background: hsl(0, 65%, 48%);
+  color: white;
 }
 
-.git-sync-btn-danger:hover {
-  background: hsl(0, 65%, 40%) !important;
+button.git-sync-btn-danger:hover {
+  background: hsl(0, 65%, 40%);
 }
 
-.git-sync-btn-warning {
-  background: hsl(35, 85%, 50%) !important;
-  color: white !important;
+button.git-sync-btn-warning {
+  background: hsl(35, 85%, 50%);
+  color: white;
 }
 
-.git-sync-btn-warning:hover {
-  background: hsl(35, 85%, 42%) !important;
+button.git-sync-btn-warning:hover {
+  background: hsl(35, 85%, 42%);
 }
 
-.git-sync-btn-local {
-  background: hsl(210, 55%, 50%) !important;
-  color: white !important;
+button.git-sync-btn-local {
+  background: hsl(210, 55%, 50%);
+  color: white;
 }
 
-.git-sync-btn-remote {
-  background: hsl(142, 55%, 40%) !important;
-  color: white !important;
+button.git-sync-btn-remote {
+  background: hsl(142, 55%, 40%);
+  color: white;
 }
 
-.git-sync-btn-secondary {
-  background: var(--background-modifier-hover) !important;
+button.git-sync-btn-secondary {
+  background: var(--background-modifier-hover);
 }
 
 .git-sync-no-conflicts {

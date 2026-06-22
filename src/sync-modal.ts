@@ -2,7 +2,7 @@
 // sync-modal.ts — Sync Center Modal for conflict resolution & status overview
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { App, Modal, Setting, ButtonComponent } from "obsidian";
+import { App, Modal, ButtonComponent } from "obsidian";
 import type { SyncStatus, ConflictFile } from "./git-engine";
 
 type Resolution = "local" | "remote";
@@ -111,15 +111,14 @@ export class SyncCenterModal extends Modal {
 
     // Expand / diff button
     const btnRow = item.createDiv({ cls: "git-sync-conflict-actions" });
-    const diffContainer = item.createDiv({ cls: "git-sync-diff-container" });
-    diffContainer.style.display = "none";
+    const diffContainer = item.createDiv({ cls: "git-sync-diff-container git-sync-hidden" });
 
     new ButtonComponent(btnRow)
       .setButtonText("View Diff")
       .setClass("git-sync-btn-secondary")
       .onClick(() => {
-        const isVisible = diffContainer.style.display !== "none";
-        diffContainer.style.display = isVisible ? "none" : "block";
+        const isVisible = !diffContainer.hasClass("git-sync-hidden");
+        diffContainer.toggleClass("git-sync-hidden", isVisible);
         if (!isVisible && diffContainer.childElementCount === 0) {
           this.renderDiff(diffContainer, conflict);
         }
@@ -202,7 +201,6 @@ export class SyncCenterModal extends Modal {
     itemEl.empty();
     this.renderConflictItem(itemEl.parentElement!, conflict);
     // Remove the wrapper since renderConflictItem creates its own
-    const newItem = itemEl.parentElement!.lastElementChild!;
     itemEl.remove();
 
     this.updateFinalizeButton();
@@ -222,14 +220,7 @@ export class SyncCenterModal extends Modal {
         await this.onFinalize();
       });
       
-    // Add some inline style or we can append to CSS
-    mergeRow.style.display = "flex";
-    mergeRow.style.justifyContent = "flex-end";
-    mergeRow.style.marginBottom = "var(--size-4-4)";
-    mergeRow.style.padding = "var(--size-4-2)";
-    mergeRow.style.background = "var(--background-secondary)";
-    mergeRow.style.borderRadius = "var(--radius-m)";
-    mergeRow.style.border = "1px solid var(--background-modifier-border)";
+    // Styles are now handled by .git-sync-top-actions in CSS
   }
 
   private renderActions(el: HTMLElement) {
