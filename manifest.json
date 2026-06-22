@@ -1,7 +1,7 @@
 {
   "id": "yet-another-all-in-one",
   "name": "Yet Another All-In-One",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "minAppVersion": "1.5.0",
   "description": "All-in-one plugin featuring Git sync and more - because one plugin is never enough.",
   "author": "cmdaeo",
