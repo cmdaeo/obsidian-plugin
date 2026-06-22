@@ -14,8 +14,8 @@ class GitSyncPlugin extends Plugin {
 
   async onload() {
     await this.loadSettings();
-    // SyncManager constructor takes only vault
-    this.syncManager = new SyncManager(this.app.vault);
+    // SyncManager constructor takes app + vault
+    this.syncManager = new SyncManager(this.app, this.app.vault);
 
     this.addSettingTab(new GitSyncSettingsTab(this.app, this));
 
@@ -58,15 +58,20 @@ class GitSyncPlugin extends Plugin {
       callback: () => { void this.syncManager.clone(this.settings); },
     });
 
+    this.addCommand({
+      id: "git-sync-center",
+      name: "Open Sync Center",
+      callback: () => { void this.syncManager.openSyncCenter(this.settings); },
+    });
+
     if (this.settings.pullOnStartup) {
       this.app.workspace.onLayoutReady(() => {
         void this.syncManager.startupPull(this.settings);
       });
     }
 
-    if (this.settings.autoSyncEnabled) {
-      this.syncManager.startAutoSync(this.settings);
-    }
+    // Start watchers for .gitignore mirroring and auto-sync
+    this.syncManager.startFileWatchers(this.settings);
   }
 
   onunload() {

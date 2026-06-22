@@ -23,6 +23,7 @@ export interface GitSyncSettings {
   pullOnStartup:        boolean;
   auditLogEnabled:      boolean;
   auditLogPath:         string;
+  ignoreFilePath:       string;
   session:              OAuthSession | null;
 }
 
@@ -39,6 +40,7 @@ export const DEFAULT_SETTINGS: GitSyncSettings = {
   pullOnStartup:       true,
   auditLogEnabled:     true,
   auditLogPath:        "_System/Sync_Log.md",
+  ignoreFilePath:      "_System/ignore.md",
   session:             null,
 };
 

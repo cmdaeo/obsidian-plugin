@@ -17,6 +17,17 @@ function copyReleaseFiles() {
   ensureDir("release");
   copyFileSync("manifest.json", "release/manifest.json");
   try { copyFileSync("styles/main.css", "release/styles.css"); } catch (_) {}
+
+  const testDir = "C:/Users/Miguel/Documents/Obsidian Vault/.obsidian/plugins/yet-another-all-in-one";
+  try {
+    ensureDir(testDir);
+    if (existsSync("release/main.js")) copyFileSync("release/main.js", `${testDir}/main.js`);
+    copyFileSync("release/manifest.json", `${testDir}/manifest.json`);
+    if (existsSync("release/styles.css")) copyFileSync("release/styles.css", `${testDir}/styles.css`);
+    console.log("Success copying the files.");
+  } catch (e) {
+    console.error("Could not copy to local test vault:", e.message);
+  }
 }
 
 const config = {

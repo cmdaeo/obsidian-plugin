@@ -53,3 +53,273 @@
 .git-sync-gitea-modal input[type="password"] {
   width: 100%;
 }
+
+/* ── Sync Center Modal ─────────────────────────────────────────────────────── */
+
+.git-sync-center-modal {
+  --modal-width: 720px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.git-sync-center-header {
+  margin-bottom: var(--size-4-4);
+}
+
+.git-sync-center-title {
+  margin: 0 0 var(--size-2-1);
+  font-size: var(--font-ui-large);
+}
+
+.git-sync-center-subtitle {
+  color: var(--text-muted);
+  margin: 0;
+  font-size: var(--font-ui-small);
+}
+
+/* Status badges */
+.git-sync-status-badges {
+  display: flex;
+  gap: var(--size-4-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--size-4-4);
+}
+
+.git-sync-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-2-2);
+  padding: var(--size-2-2) var(--size-4-2);
+  border-radius: var(--radius-s);
+  font-size: var(--font-ui-smaller);
+  font-weight: var(--font-semibold);
+}
+
+.git-sync-badge-icon {
+  font-weight: bold;
+}
+
+.git-sync-badge-ahead {
+  background: hsla(142, 70%, 45%, 0.15);
+  color: hsl(142, 70%, 40%);
+}
+
+.git-sync-badge-behind {
+  background: hsla(210, 70%, 50%, 0.15);
+  color: hsl(210, 70%, 45%);
+}
+
+.git-sync-badge-branch {
+  background: hsla(270, 50%, 50%, 0.15);
+  color: hsl(270, 50%, 50%);
+}
+
+/* Conflict section */
+.git-sync-conflicts-section {
+  margin-bottom: var(--size-4-4);
+}
+
+.git-sync-section-title {
+  font-size: var(--font-ui-medium);
+  font-weight: var(--font-semibold);
+  margin: 0 0 var(--size-2-2);
+}
+
+.git-sync-conflict-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-4-2);
+}
+
+.git-sync-conflict-item {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  padding: var(--size-4-2) var(--size-4-3);
+  background: var(--background-secondary);
+}
+
+.git-sync-conflict-header {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--size-2-2);
+}
+
+.git-sync-conflict-filename {
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-small);
+  font-weight: var(--font-semibold);
+}
+
+.git-sync-conflict-filename.git-sync-resolved {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.git-sync-conflict-status {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.git-sync-resolved-badge {
+  font-size: var(--font-ui-smaller);
+  color: hsl(142, 70%, 40%);
+  font-weight: var(--font-semibold);
+}
+
+.git-sync-conflict-actions {
+  display: flex;
+  gap: var(--size-2-2);
+  flex-wrap: wrap;
+}
+
+/* Diff view */
+.git-sync-diff-container {
+  margin-top: var(--size-4-2);
+}
+
+.git-sync-diff-view {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+}
+
+.git-sync-diff-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.git-sync-diff-panel {
+  overflow-x: auto;
+  min-width: 0;
+}
+
+.git-sync-diff-panel-header {
+  padding: var(--size-2-2) var(--size-4-2);
+  font-weight: var(--font-semibold);
+  font-size: var(--font-ui-smaller);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.git-sync-diff-local .git-sync-diff-panel-header {
+  background: hsla(210, 50%, 50%, 0.1);
+}
+
+.git-sync-diff-remote .git-sync-diff-panel-header {
+  background: hsla(142, 50%, 50%, 0.1);
+}
+
+.git-sync-diff-content {
+  margin: 0;
+  padding: var(--size-2-2);
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-smaller);
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.git-sync-diff-line {
+  display: flex;
+  gap: var(--size-2-2);
+  padding: 1px var(--size-2-2);
+  min-height: 1.4em;
+}
+
+.git-sync-diff-linenum {
+  color: var(--text-faint);
+  min-width: 2.5em;
+  text-align: right;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.git-sync-diff-code {
+  flex: 1;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.git-sync-diff-changed-local {
+  background: hsla(0, 70%, 50%, 0.1);
+}
+
+.git-sync-diff-changed-remote {
+  background: hsla(142, 70%, 50%, 0.1);
+}
+
+/* Action buttons */
+.git-sync-center-actions {
+  margin-top: var(--size-4-2);
+}
+
+.git-sync-divider {
+  border: none;
+  border-top: 1px solid var(--background-modifier-border);
+  margin: var(--size-4-3) 0;
+}
+
+.git-sync-center-btn-row {
+  display: flex;
+  gap: var(--size-4-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--size-2-2);
+}
+
+.git-sync-center-cancel {
+  justify-content: flex-end;
+}
+
+.git-sync-btn-danger {
+  background: hsl(0, 65%, 48%) !important;
+  color: white !important;
+}
+
+.git-sync-btn-danger:hover {
+  background: hsl(0, 65%, 40%) !important;
+}
+
+.git-sync-btn-warning {
+  background: hsl(35, 85%, 50%) !important;
+  color: white !important;
+}
+
+.git-sync-btn-warning:hover {
+  background: hsl(35, 85%, 42%) !important;
+}
+
+.git-sync-btn-local {
+  background: hsl(210, 55%, 50%) !important;
+  color: white !important;
+}
+
+.git-sync-btn-remote {
+  background: hsl(142, 55%, 40%) !important;
+  color: white !important;
+}
+
+.git-sync-btn-secondary {
+  background: var(--background-modifier-hover) !important;
+}
+
+.git-sync-no-conflicts {
+  padding: var(--size-4-4);
+  text-align: center;
+  background: var(--background-secondary);
+  border-radius: var(--radius-m);
+  margin-bottom: var(--size-4-4);
+}
+
+.git-sync-muted {
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  margin: var(--size-2-1) 0 0;
+}
+
+.git-sync-actions-label {
+  margin-bottom: var(--size-4-2);
+}
