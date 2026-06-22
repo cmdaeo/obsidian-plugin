@@ -1,22 +1,24 @@
 # Changelog
 
-All notable changes to Vault Git Sync are documented here.
+All notable changes to YAP (Yet Another Plugin) are documented here.  
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
-## [1.0.0] — 2026-06-21
+## [1.0.1] — 2026-06-21
 
 ### Added
+
 - Initial release
-- isomorphic-git engine — pure JS, no native binaries
+- isomorphic-git engine (pure JS, no native binaries)
 - Cross-platform: Windows desktop and Android
-- Obsidian `requestUrl` HTTP adapter (replaces `fetch`, bypasses mobile CSP)
-- Node-compatible FS adapter with proper `isDirectory()` / `isFile()` stat methods
-- Auto-sync: background debounced commit + push on file changes
+- Obsidian `requestUrl` HTTP adapter — replaces `fetch`, bypasses mobile CSP
+- Node-compatible FS adapter with proper `isDirectory`, `isFile`, `stat` methods
+- Auto-sync: background debounced commit & push on file changes
 - Startup pull on vault open
 - Manual commands: Pull, Commit & Push, Init, Clone
 - Settings UI: remote URL, branch, credentials, auto-sync toggle
-- Audit log: append-only Markdown table in `_System/Sync_Log.md`
-  - Structured JSON context blocks (remote, branch, provider, error details)
-  - Startup pull skips with specific reason instead of silent failures
-- GitHub Actions release workflow (tag push → build → release assets)
-- `version-bump.mjs` script for release automation
+- Audit log: append-only Markdown table in `_System/SyncLog.md`
+- Structured JSON context blocks: remote, branch, provider, error details
+- Startup pull skips with specific reason instead of silent failures
+- GitHub Actions release workflow: tag push → build → release assets
+- `release.mjs` script for release automation
+- `revert-release.mjs` script — removes tags and undoes commit only (no file edits)

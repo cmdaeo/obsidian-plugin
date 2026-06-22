@@ -1,12 +1,11 @@
 {
-  "name": "vault-git-sync",
-  "version": "1.0.1",
+  "name": "yet-another-plugin",
+  "version": "1.0.2",
   "description": "Local-first Git synchronization for Obsidian using isomorphic-git.",
   "main": "release/main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
     "build": "node esbuild.config.mjs production",
-    "version": "node version-bump.mjs && git add manifest.json versions.json package.json",
     "release": "node scripts/release.mjs",
     "revert-release": "node scripts/revert-release.mjs"
   },

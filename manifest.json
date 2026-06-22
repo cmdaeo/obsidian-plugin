@@ -1,7 +1,7 @@
 {
-  "id": "vault-git-sync",
-  "name": "Vault Git Sync",
-  "version": "1.0.1",
+  "id": "yet-another-plugin",
+  "name": "Yet Another Plugin",
+  "version": "1.0.2",
   "minAppVersion": "1.5.0",
   "description": "Local-first, cross-platform Git synchronization using isomorphic-git. No native binaries — works on desktop and Android.",
   "author": "cmdaeo",
