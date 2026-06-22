@@ -89,12 +89,16 @@ if (!remote) {
   skip(`Remote tag ${targetVersion} not on remote`);
 }
 
-// ── 3. Soft-reset the version-bump commit ────────────────────────────────────
+// ── 3. Undo the version-bump commit ────────────────────────────────────────────
 
 hr();
 info('Undoing version-bump commit (soft reset)');
 run('git reset --soft HEAD~1');
-ok('Commit undone — files remain staged, ready for re-release');
+
+info('Restoring version files to their pre-release state');
+run('git restore --staged manifest.json versions.json package.json');
+run('git checkout HEAD manifest.json versions.json package.json');
+ok('Commit undone and version numbers reverted — other modified files remain staged');
 
 // ── 4. Advisory: GitHub release ──────────────────────────────────────────────
 

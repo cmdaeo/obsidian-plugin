@@ -97,8 +97,7 @@ ok('package.json');
 // 11. Stage
 hr();
 info('Staging');
-run('git add manifest.json versions.json package.json');
-run('git add -u'); // stage any other tracked modified files
+run('git add -A'); // stage all modified and untracked files
 ok('Staged');
 
 // 12. Commit

@@ -10,8 +10,11 @@ function isConflictError(err: Error): boolean {
     || m.includes("not a simple fast-forward")
     || m.includes("Merges with conflicts")
     || m.includes("Merge conflict")
+    || m.includes("CheckoutConflict")
+    || m.includes("overwritten by checkout")
     || (err.constructor && err.constructor.name === "MergeNotSupportedError")
-    || (err.constructor && err.constructor.name === "PushRejectedError");
+    || (err.constructor && err.constructor.name === "PushRejectedError")
+    || (err.constructor && err.constructor.name === "CheckoutConflictError");
 }
 
 export class SyncManager {
