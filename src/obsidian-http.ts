@@ -16,11 +16,11 @@ export const obsidianHttp = {
     if (body) {
       const chunks: Uint8Array[] = [];
       if (Symbol.asyncIterator in body) {
-        for await (const chunk of body as AsyncIterableIterator<Uint8Array>) {
+        for await (const chunk of body) {
           chunks.push(chunk);
         }
       } else {
-        for (const chunk of body as Array<Uint8Array>) {
+        for (const chunk of body) {
           chunks.push(chunk);
         }
       }
@@ -44,7 +44,7 @@ export const obsidianHttp = {
       method,
       statusCode:    res.status,
       statusMessage: String(res.status),
-      headers:       res.headers as Record<string, string>,
+      headers:       res.headers,
       body: [new Uint8Array(res.arrayBuffer)][Symbol.iterator](),
     };
   },

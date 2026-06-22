@@ -8,6 +8,10 @@ export class GitSyncSettingsTab extends PluginSettingTab {
   }
 
   display(): void {
+    this.renderSettings();
+  }
+
+  private renderSettings(): void {
     const { containerEl } = this;
     containerEl.empty();
     containerEl.addClass("git-sync-settings");
@@ -66,7 +70,7 @@ export class GitSyncSettingsTab extends PluginSettingTab {
             const { githubClientId: id, githubClientSecret: secret } = this.plugin.settings;
             if (!id || !secret) { new Notice("Git Sync: Enter your GitHub Client ID and Secret first."); return; }
             const session = await runWebFlow(this.app, "github", id, secret);
-            if (session) { this.plugin.settings.session = session; await this.plugin.saveSettings(); new Notice(`Git Sync: Connected as @${session.username}`); this.display(); }
+            if (session) { this.plugin.settings.session = session; await this.plugin.saveSettings(); new Notice(`Git Sync: Connected as @${session.username}`); this.renderSettings(); }
           })
         );
     }
@@ -105,7 +109,7 @@ export class GitSyncSettingsTab extends PluginSettingTab {
             const { gitlabClientId: id, gitlabClientSecret: secret } = this.plugin.settings;
             if (!id || !secret) { new Notice("Git Sync: Enter your GitLab Application ID and Secret first."); return; }
             const session = await runWebFlow(this.app, "gitlab", id, secret);
-            if (session) { this.plugin.settings.session = session; await this.plugin.saveSettings(); new Notice(`Git Sync: Connected as @${session.username}`); this.display(); }
+            if (session) { this.plugin.settings.session = session; await this.plugin.saveSettings(); new Notice(`Git Sync: Connected as @${session.username}`); this.renderSettings(); }
           })
         );
     }
@@ -119,24 +123,27 @@ export class GitSyncSettingsTab extends PluginSettingTab {
         .setName("Connect")
         .addButton((btn) =>
           btn.setButtonText("Connect Gitea instance").onClick(() =>
-            new GiteaPATModal(this.app, async (result) => {
-              if (!result) return;
-              try {
-                const res = await requestUrl({ url: `${result.baseUrl}/api/v1/user`, headers: { Authorization: `token ${result.token}` } });
-                if (res.status >= 400) throw new Error(`HTTP ${res.status}`);
-                const user = res.json as { login?: string; username?: string; email?: string };
-                this.plugin.settings.session = {
-                  provider:    "gitea",
-                  username:    user.login ?? user.username ?? "user",
-                  email:       user.email ?? "",
-                  accessToken: result.token
-                };
-                await this.plugin.saveSettings();
-                new Notice(`Git Sync: Connected as ${this.plugin.settings.session!.username}`);
-                this.display();
-              } catch (e) {
-                new Notice(`Git Sync: Could not verify Gitea token — ${(e as Error).message}`);
-              }
+            new GiteaPATModal(this.app, (result) => {
+              void (async () => {
+                if (!result) return;
+                try {
+                  const res = await requestUrl({ url: `${result.baseUrl}/api/v1/user`, headers: { Authorization: `token ${result.token}` } });
+                  if (res.status >= 400) throw new Error(`HTTP ${res.status}`);
+                  const user = res.json as { login?: string; username?: string; email?: string };
+                  this.plugin.settings.session = {
+                    provider:    "gitea",
+                    username:    user.login ?? user.username ?? "user",
+                    email:       user.email ?? "",
+                    accessToken: result.token
+                  };
+                  await this.plugin.saveSettings();
+                  const sessionUsername = this.plugin.settings.session.username;
+                  new Notice(`Git Sync: Connected as ${sessionUsername}`);
+                  this.renderSettings();
+                } catch (e) {
+                  new Notice(`Git Sync: Could not verify Gitea token — ${(e as Error).message}`);
+                }
+              })();
             }).open()
           )
         );
@@ -176,7 +183,7 @@ export class GitSyncSettingsTab extends PluginSettingTab {
           this.plugin.settings.session = null;
           await this.plugin.saveSettings();
           new Notice("Git Sync: Disconnected.");
-          this.display();
+          this.renderSettings();
         })
       );
   }
