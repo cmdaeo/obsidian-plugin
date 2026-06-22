@@ -129,9 +129,7 @@ export class GitSyncSettingsTab extends PluginSettingTab {
                   provider:    "gitea",
                   username:    user.login ?? user.username ?? "user",
                   email:       user.email ?? "",
-                  accessToken: result.token,
-                  connectedAt: new Date().toISOString(),  // ← correct field name
-                  scopes:      "repo",
+                  accessToken: result.token
                 };
                 await this.plugin.saveSettings();
                 new Notice(`Git Sync: Connected as ${this.plugin.settings.session!.username}`);
@@ -172,7 +170,7 @@ export class GitSyncSettingsTab extends PluginSettingTab {
     const labels: Record<string, string> = { github: "GitHub", gitlab: "GitLab", gitea: "Gitea" };
     new Setting(containerEl)
       .setName(`✓ Connected to ${labels[provider] ?? provider}`)
-      .setDesc(`@${s.username}${s.email ? ` · ${s.email}` : ""} — connected ${formatRelative(s.connectedAt)}`)
+      .setDesc(`@${s.username}${s.email ? ` · ${s.email}` : ""}`)
       .addButton((btn) =>
         btn.setButtonText("Disconnect").setWarning().onClick(async () => {
           this.plugin.settings.session = null;
