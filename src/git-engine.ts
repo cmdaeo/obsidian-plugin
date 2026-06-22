@@ -425,7 +425,7 @@ export class GitEngine {
       const remoteOid = await git.resolveRef({ fs: this.fs, dir: this.dir, ref: `refs/remotes/${remote}/${branch}` });
 
       // Write the branch ref directly to match remote
-      await this.fs.promises.writeFile(`.git/refs/heads/${branch}`, remoteOid + "\n");
+      await git.writeRef({ fs: this.fs, dir: this.dir, ref: `refs/heads/${branch}`, value: remoteOid, force: true });
 
       // Checkout to overwrite working tree
       await git.checkout({
