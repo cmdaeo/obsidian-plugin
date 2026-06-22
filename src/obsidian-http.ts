@@ -1,17 +1,13 @@
 import { requestUrl } from "obsidian";
+import type { HttpClient, GitHttpRequest, GitHttpResponse } from "isomorphic-git";
 
-export const obsidianHttp = {
+export const obsidianHttp: HttpClient = {
   async request({
     url,
     method,
     headers,
     body,
-  }: {
-    url:     string;
-    method:  string;
-    headers: Record<string, string>;
-    body?:   AsyncIterableIterator<Uint8Array> | Array<Uint8Array> | null;
-  }) {
+  }: GitHttpRequest): Promise<GitHttpResponse> {
     let bodyBytes: Uint8Array | undefined;
     if (body) {
       const chunks: Uint8Array[] = [];
@@ -20,7 +16,7 @@ export const obsidianHttp = {
           chunks.push(chunk);
         }
       } else {
-        for (const chunk of body) {
+        for (const chunk of body as Iterable<Uint8Array>) {
           chunks.push(chunk);
         }
       }
@@ -45,7 +41,7 @@ export const obsidianHttp = {
       statusCode:    res.status,
       statusMessage: String(res.status),
       headers:       res.headers,
-      body: [new Uint8Array(res.arrayBuffer)][Symbol.iterator](),
+      body: (async function*() { yield new Uint8Array(res.arrayBuffer); })(),
     };
   },
 };

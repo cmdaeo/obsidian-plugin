@@ -1,5 +1,6 @@
 import { App, PluginSettingTab, Setting, Notice, requestUrl } from "obsidian";
 import { runWebFlow, GiteaPATModal } from "./oauth";
+import { GitEngine } from "./git-engine";
 import type GitSyncPlugin from "./main";
 
 export class GitSyncSettingsTab extends PluginSettingTab {
@@ -170,6 +171,15 @@ export class GitSyncSettingsTab extends PluginSettingTab {
 
     new Setting(containerEl).setName("Log file path")
       .addText((t) => t.setPlaceholder("_System/SyncLog.md").setValue(this.plugin.settings.auditLogPath).onChange(async (v) => { this.plugin.settings.auditLogPath = v.trim(); await this.plugin.saveSettings(); }));
+
+    new Setting(containerEl).setName("Ignore rules file path")
+      .setDesc("A visible file in your vault that will be automatically synced to the hidden .gitignore file.")
+      .addText((t) => t.setPlaceholder("_System/ignore.md").setValue(this.plugin.settings.ignoreFilePath).onChange(async (v) => { 
+        this.plugin.settings.ignoreFilePath = v.trim() || "_System/ignore.md"; 
+        await this.plugin.saveSettings(); 
+        const engine = new GitEngine(this.plugin.app.vault);
+        await engine.syncIgnoreFile(this.plugin.settings.ignoreFilePath);
+      }));
   }
 
   private renderConnectedBanner(containerEl: HTMLElement, provider: string): void {
