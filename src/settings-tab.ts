@@ -189,7 +189,7 @@ export class GitSyncSettingsTab extends PluginSettingTab {
       .setName(`✓ Connected to ${labels[provider] ?? provider}`)
       .setDesc(`@${s.username}${s.email ? ` · ${s.email}` : ""}`)
       .addButton((btn) =>
-        btn.setButtonText("Disconnect").setDestructive().onClick(async () => {
+        btn.setButtonText("Disconnect").setWarning().onClick(async () => {
           this.plugin.settings.session = null;
           await this.plugin.saveSettings();
           new Notice("Git Sync: Disconnected.");
