@@ -1,4 +1,4 @@
-import { App, PluginSettingTab, Setting, Notice } from "obsidian";
+import { App, PluginSettingTab, Setting, Notice, requestUrl } from "obsidian";
 import { runWebFlow, GiteaPATModal } from "./oauth";
 import type GitSyncPlugin from "./main";
 
@@ -122,9 +122,9 @@ export class GitSyncSettingsTab extends PluginSettingTab {
             new GiteaPATModal(this.app, async (result) => {
               if (!result) return;
               try {
-                const res = await fetch(`${result.baseUrl}/api/v1/user`, { headers: { Authorization: `token ${result.token}` } });
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const user = await res.json();
+                const res = await requestUrl({ url: `${result.baseUrl}/api/v1/user`, headers: { Authorization: `token ${result.token}` } });
+                if (res.status >= 400) throw new Error(`HTTP ${res.status}`);
+                const user = res.json as { login?: string; username?: string; email?: string };
                 this.plugin.settings.session = {
                   provider:    "gitea",
                   username:    user.login ?? user.username ?? "user",
@@ -172,7 +172,7 @@ export class GitSyncSettingsTab extends PluginSettingTab {
       .setName(`✓ Connected to ${labels[provider] ?? provider}`)
       .setDesc(`@${s.username}${s.email ? ` · ${s.email}` : ""}`)
       .addButton((btn) =>
-        btn.setButtonText("Disconnect").setWarning().onClick(async () => {
+        btn.setButtonText("Disconnect").setDestructive().onClick(async () => {
           this.plugin.settings.session = null;
           await this.plugin.saveSettings();
           new Notice("Git Sync: Disconnected.");
@@ -180,14 +180,4 @@ export class GitSyncSettingsTab extends PluginSettingTab {
         })
       );
   }
-}
-
-function formatRelative(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 2) return "just now";
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.floor(hrs / 24)}d ago`;
 }

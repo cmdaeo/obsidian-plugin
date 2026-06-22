@@ -108,9 +108,9 @@ export async function runWebFlow(app: App, provider: SupportedOAuthProvider, cli
   const modal = new WaitingModal(app, provider === 'github' ? 'GitHub' : 'GitLab', () => { cancelled = true; if (pending) { pending.resolve(null); pending = null; } });
   modal.open();
   window.open(authUrl, '_blank');
-  const timer = setTimeout(() => { if (pending) { pending.resolve(null); pending = null; } modal.setStatus('Timed out. Please try again.'); setTimeout(() => modal.close(), 2000); }, 10 * 60 * 1000);
+  const timer = window.setTimeout(() => { if (pending) { pending.resolve(null); pending = null; } modal.setStatus('Timed out. Please try again.'); window.setTimeout(() => modal.close(), 2000); }, 10 * 60 * 1000);
   const result = await callbackPromise;
-  clearTimeout(timer);
+  window.clearTimeout(timer);
   if (cancelled || !result) { modal.close(); return null; }
   try {
     modal.setStatus('Exchanging token…');
@@ -118,13 +118,13 @@ export async function runWebFlow(app: App, provider: SupportedOAuthProvider, cli
     modal.setStatus('Fetching profile…');
     const { username, email } = await fetchUser(provider, token);
     modal.setStatus(`Signed in as ${username}`);
-    setTimeout(() => modal.close(), 1000);
+    window.setTimeout(() => modal.close(), 1000);
     return { provider, username, email, accessToken: token, connectedAt: new Date().toISOString(), scopes: cfg.scope.split(' ') } as OAuthSession;
   } catch (e) {
     const msg = (e as Error).message;
     modal.setStatus(msg);
     new Notice(`Git Sync: auth error — ${msg}`);
-    setTimeout(() => modal.close(), 2500);
+    window.setTimeout(() => modal.close(), 2500);
     return null;
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "yet-another-all-in-one",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Yet Another All-In-One Obsidian plugin.",
   "main": "release/main.js",
   "scripts": {
@@ -17,14 +17,14 @@
   "author": "cmdaeo",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "esbuild": "^0.24.0",
+    "@types/node": "^26.0.0",
+    "esbuild": "^0.28.1",
     "obsidian": "latest",
-    "tslib": "^2.8.0",
-    "typescript": "^5.0.0"
+    "tslib": "^2.8.1",
+    "typescript": "^6.0.3"
   },
   "dependencies": {
     "buffer": "^6.0.3",
-    "isomorphic-git": "^1.27.0"
+    "isomorphic-git": "^1.38.5"
   }
 }

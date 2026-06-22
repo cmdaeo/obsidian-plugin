@@ -52,7 +52,7 @@ async function statImpl(vault: Vault, p: string) {
 
   const exists = await vault.adapter.exists(vp);
   if (!exists) {
-    const err: any = new Error(`ENOENT: no such file or directory, stat '${p}'`);
+    const err = new Error(`ENOENT: no such file or directory, stat '${p}'`) as Error & { code?: string };
     err.code = "ENOENT";
     throw err;
   }
@@ -149,8 +149,8 @@ export function buildFsAdapter(vault: Vault) {
     async rmdir(p: string): Promise<void> {
       // adapter.rmdir may not exist on all platforms — try both
       const vp = toVaultPath(p);
-      if ((adapter as any).rmdir) {
-        await (adapter as any).rmdir(vp);
+      if ("rmdir" in adapter && typeof adapter.rmdir === "function") {
+        await adapter.rmdir(vp, false);
       } else {
         await adapter.remove(vp);
       }

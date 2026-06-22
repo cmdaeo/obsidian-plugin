@@ -63,7 +63,7 @@ export class AuditLog {
 
   /** Extract structured context from any thrown value */
   static errorContext(e: unknown, extra: Record<string, unknown> = {}): SyncEvent["context"] {
-    const err = e as any;
+    const err = e as { name?: string; data?: unknown; stack?: string };
     return {
       errorName:  err?.name    ?? "Error",
       errorData:  err?.data    ? JSON.stringify(err.data) : undefined,

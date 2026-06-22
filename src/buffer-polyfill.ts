@@ -2,9 +2,9 @@
 // Must be the very first import in main.ts for Android builds.
 // Uses the npm 'buffer' package which provides a full Buffer implementation
 // that works in any JS environment without Node.js.
-import { Buffer as _Buffer } from "buffer";
+import { Buffer as _Buffer } from "buffer/";
 
-if (typeof globalThis.Buffer === "undefined") {
+if (typeof (window as any).Buffer === "undefined") {
   // @ts-ignore
-  globalThis.Buffer = _Buffer;
+  (window as any).Buffer = _Buffer;
 }

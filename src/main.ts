@@ -1,5 +1,5 @@
 import "./buffer-polyfill";
-import { Plugin, Modal, App, Setting, Notice } from "obsidian";
+import { Plugin, Modal, App, Setting } from "obsidian";
 import type { GitSyncSettings } from "./types";
 import { DEFAULT_SETTINGS } from "./types";
 import { SyncManager } from "./sync-manager";
@@ -27,39 +27,40 @@ class GitSyncPlugin extends Plugin {
     this.addCommand({
       id: "git-sync-pull",
       name: "Pull",
-      callback: () => this.syncManager.manualPull(this.settings),
+      callback: () => { void this.syncManager.manualPull(this.settings); },
     });
 
     this.addCommand({
       id: "git-sync-commit-push",
       name: "Commit & Push",
-      callback: () => this.syncManager.manualCommitAndPush(this.settings),
+      callback: () => { void this.syncManager.manualCommitAndPush(this.settings); },
     });
 
     this.addCommand({
       id: "git-sync-commit-push-custom",
       name: "Commit & Push (custom message)",
-      callback: () =>
+      callback: () => {
         new CommitMessageModal(this.app, async (msg) => {
           await this.syncManager.manualCommitAndPush(this.settings, msg);
-        }).open(),
+        }).open();
+      },
     });
 
     this.addCommand({
       id: "git-sync-init",
       name: "Initialise repository",
-      callback: () => this.syncManager.init(this.settings),
+      callback: () => { void this.syncManager.init(this.settings); },
     });
 
     this.addCommand({
       id: "git-sync-clone",
       name: "Clone remote into vault",
-      callback: () => this.syncManager.clone(this.settings),
+      callback: () => { void this.syncManager.clone(this.settings); },
     });
 
     if (this.settings.pullOnStartup) {
       this.app.workspace.onLayoutReady(() => {
-        this.syncManager.startupPull(this.settings);
+        void this.syncManager.startupPull(this.settings);
       });
     }
 
@@ -68,7 +69,7 @@ class GitSyncPlugin extends Plugin {
     }
   }
 
-  async onunload() {
+  onunload() {
     this.syncManager?.stopAutoSync();
   }
 
@@ -104,14 +105,14 @@ class CommitMessageModal extends Modal {
           .setValue(this.value)
           .onChange((v) => { this.value = v; });
         t.inputEl.addClass("git-sync-commit-input");
-        setTimeout(() => t.inputEl.focus(), 50);
+        window.setTimeout(() => t.inputEl.focus(), 50);
       });
 
     new Setting(contentEl)
       .addButton((btn) =>
-        btn.setButtonText("Commit & Push").setCta().onClick(async () => {
+        btn.setButtonText("Commit & Push").setCta().onClick(() => {
           this.close();
-          await this.onSubmit(this.value.trim() || "vault sync");
+          void this.onSubmit(this.value.trim() || "vault sync");
         })
       )
       .addButton((btn) =>

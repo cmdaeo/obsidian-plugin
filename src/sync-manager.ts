@@ -6,8 +6,8 @@ import { GitSyncSettings } from "./types";
 export class SyncManager {
   private engine:  GitEngine;
   private log:     AuditLog;
-  private timer:   ReturnType<typeof setTimeout> | null = null;
-  private watcher: ReturnType<typeof setInterval>  | null = null;
+  private timer:   number | null = null;
+  private watcher: number | null = null;
   private busy =   false;
 
   constructor(private vault: Vault) {
@@ -107,7 +107,7 @@ export class SyncManager {
             : "FAILURE",
           commitResult.ok ? commitResult.message : commitResult.error.message,
           commitResult.ok
-            ? { ...this.baseCtx(settings), sha: (commitResult as any).sha }
+            ? { ...this.baseCtx(settings), sha: (commitResult as { sha?: string }).sha }
             : { ...this.baseCtx(settings), ...AuditLog.errorContext(commitResult.error) }
         ),
         settings
@@ -171,15 +171,15 @@ export class SyncManager {
     this.stopAutoSync();
     const debounceMs = settings.autoSyncDebounceMs ?? 5000;
     this.vault.on("modify", () => {
-      if (this.timer) clearTimeout(this.timer);
-      this.timer = setTimeout(() => {
+      if (this.timer) window.clearTimeout(this.timer);
+      this.timer = window.setTimeout(() => {
         this.manualCommitAndPush(settings).catch(() => {});
       }, debounceMs);
     });
   }
 
   stopAutoSync(): void {
-    if (this.timer)   { clearTimeout(this.timer);   this.timer   = null; }
-    if (this.watcher) { clearInterval(this.watcher); this.watcher = null; }
+    if (this.timer)   { window.clearTimeout(this.timer);   this.timer   = null; }
+    if (this.watcher) { window.clearInterval(this.watcher); this.watcher = null; }
   }
 }
