@@ -4,10 +4,6 @@
 // that works in any JS environment without Node.js.
 import { Buffer as _Buffer } from "buffer/";
 
-interface WindowWithBuffer extends Window {
-  Buffer?: typeof _Buffer;
-}
-
-if (typeof (window as WindowWithBuffer).Buffer === "undefined") {
-  (window as WindowWithBuffer).Buffer = _Buffer;
+if (typeof (window as unknown as { Buffer?: typeof _Buffer }).Buffer === "undefined") {
+  (window as unknown as { Buffer?: typeof _Buffer }).Buffer = _Buffer;
 }
