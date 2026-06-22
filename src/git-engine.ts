@@ -1,22 +1,11 @@
-import git from "isomorphic-git";
 import { Vault } from "obsidian";
+import * as git from "isomorphic-git";
+import http from "isomorphic-git/http/web";
 import { buildFsAdapter } from "./fs-adapter";
-import { obsidianHttp as http } from "./obsidian-http";
-import { GitSyncSettings } from "./types";
-
-export type GitResult =
-  | { ok: true;  message: string; sha?: string }
-  | { ok: false; error: Error };
+import { GitSyncSettings, GitResult } from "./types";
 
 function toError(e: unknown): Error {
-  if (e instanceof Error) {
-    // isomorphic-git wraps causes in .cause or .data
-    const nested = (e as any).cause;
-    if (nested instanceof Error) return nested;
-    const extra = (e as any).data ? ` · data=${JSON.stringify((e as any).data)}` : "";
-    return new Error(e.message + extra);
-  }
-  return new Error(String(e));
+  return e instanceof Error ? e : new Error(String(e));
 }
 
 function categorizeError(err: Error, remoteUrl: string): Error {
@@ -45,7 +34,8 @@ export class GitEngine {
     if (!session?.accessToken) return {};
     return {
       onAuth: () => ({ username: session.username || "oauth2", password: session.accessToken }),
-      onAuthFailure: ({ url }: { url: string }) => {
+      // AuthFailureCallback receives (url: string) — NOT destructured { url: string }
+      onAuthFailure: (url: string) => {
         throw new Error(`Auth rejected by ${url} — token expired? Reconnect in settings.`);
       },
     };
@@ -53,8 +43,8 @@ export class GitEngine {
 
   private author(settings: GitSyncSettings) {
     return {
-      name:  settings.session?.username ?? "Obsidian Git Sync",
-      email: settings.session?.email    ?? "git-sync@obsidian.local",
+      name:  settings.session?.username ?? "Git Sync",
+      email: settings.session?.email    ?? "git-sync@vault.local",
     };
   }
 
@@ -110,11 +100,9 @@ export class GitEngine {
   async pull(settings: GitSyncSettings): Promise<GitResult> {
     const invalid = this.validateForNetwork(settings);
     if (invalid) return { ok: false, error: invalid };
-
     const isRepo = await this.isRepo();
     if (!isRepo)
-      return { ok: false, error: new Error("Vault is not a Git repo yet. Run 'Git Sync: Clone remote into vault' or 'Git Sync: Initialise repository' first.") };
-
+      return { ok: false, error: new Error("Vault is not a Git repo yet. Run 'Clone' or 'Initialise repository' first.") };
     try {
       await git.pull({
         fs: this.fs, http, dir: this.dir,
@@ -132,17 +120,15 @@ export class GitEngine {
   async commit(settings: GitSyncSettings, message?: string): Promise<GitResult> {
     try {
       await git.add({ fs: this.fs, dir: this.dir, filepath: "." });
-      const matrix = await git.statusMatrix({ fs: this.fs, dir: this.dir });
-      const dirty = matrix.some(([, h, w, s]) => h !== 1 || w !== 1 || s !== 1);
-      if (!dirty) return { ok: true, message: "SKIPPED: Nothing to commit." };
-
-      const msg = message ?? `vault sync @ ${new Date().toISOString()}`;
+      const status = await git.statusMatrix({ fs: this.fs, dir: this.dir });
+      const changed = status.filter(([, head, workdir, stage]) => head !== 1 || workdir !== 1 || stage !== 1);
+      if (changed.length === 0) return { ok: true, message: "SKIPPED — nothing to commit." };
       const sha = await git.commit({
         fs: this.fs, dir: this.dir,
-        message: msg,
         author: this.author(settings),
+        message: message || `vault sync ${new Date().toISOString()}`,
       });
-      return { ok: true, message: `Committed: ${sha.slice(0, 7)} — ${msg}`, sha };
+      return { ok: true, message: `Committed ${changed.length} file(s).`, sha };
     } catch (e) { return { ok: false, error: toError(e) }; }
   }
 
@@ -150,15 +136,13 @@ export class GitEngine {
     const invalid = this.validateForNetwork(settings);
     if (invalid) return { ok: false, error: invalid };
     try {
-      const result = await git.push({
+      await git.push({
         fs: this.fs, http, dir: this.dir,
         remote: settings.remoteName,
-        remoteRef: settings.branchName,
-        force: false,
+        ref: settings.branchName,
         ...this.buildAuth(settings),
       });
-      if (result.error) return { ok: false, error: new Error(result.error) };
-      return { ok: true, message: `Pushed → ${settings.remoteName}/${settings.branchName}` };
+      return { ok: true, message: "Push complete." };
     } catch (e) { return { ok: false, error: categorizeError(toError(e), settings.remoteUrl) }; }
   }
 }

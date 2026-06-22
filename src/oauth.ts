@@ -119,7 +119,7 @@ export async function runWebFlow(app: App, provider: SupportedOAuthProvider, cli
     const { username, email } = await fetchUser(provider, token);
     modal.setStatus(`Signed in as ${username}`);
     setTimeout(() => modal.close(), 1000);
-    return { provider, username, email, accessToken: token, authorizedAt: new Date().toISOString(), scopes: cfg.scope.split(' ') } as OAuthSession;
+    return { provider, username, email, accessToken: token, connectedAt: new Date().toISOString(), scopes: cfg.scope.split(' ') } as OAuthSession;
   } catch (e) {
     const msg = (e as Error).message;
     modal.setStatus(msg);

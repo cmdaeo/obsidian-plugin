@@ -7,14 +7,13 @@ export class SyncManager {
   private engine:  GitEngine;
   private log:     AuditLog;
   private timer:   ReturnType<typeof setTimeout> | null = null;
+  private watcher: ReturnType<typeof setInterval>  | null = null;
   private busy =   false;
 
   constructor(private vault: Vault) {
     this.engine = new GitEngine(vault);
     this.log    = new AuditLog(vault);
   }
-
-  // ── Shared context builder ─────────────────────────────────────────────────
 
   private baseCtx(settings: GitSyncSettings) {
     return {
@@ -25,7 +24,54 @@ export class SyncManager {
     };
   }
 
-  // ── Public commands ────────────────────────────────────────────────────────
+  private acquireLock(): boolean {
+    if (this.busy) { new Notice("Git Sync: Already running — please wait."); return false; }
+    this.busy = true;
+    return true;
+  }
+
+  private releaseLock(): void { this.busy = false; }
+
+  async init(settings: GitSyncSettings): Promise<void> {
+    if (!this.acquireLock()) return;
+    try {
+      new Notice("Git Sync: Initialising repository…");
+      const result = await this.engine.init(settings);
+      if (result.ok) await this.engine.addRemote(settings);
+      await this.log.append(
+        AuditLog.event(
+          "INIT",
+          result.ok ? "SUCCESS" : "FAILURE",
+          result.ok ? result.message : result.error.message,
+          result.ok
+            ? this.baseCtx(settings)
+            : { ...this.baseCtx(settings), ...AuditLog.errorContext(result.error) }
+        ),
+        settings
+      );
+      new Notice(result.ok ? `✓ ${result.message}` : `✗ Init failed: ${result.error.message}`);
+    } finally { this.releaseLock(); }
+  }
+
+  async clone(settings: GitSyncSettings): Promise<void> {
+    if (!this.acquireLock()) return;
+    try {
+      new Notice("Git Sync: Cloning…");
+      const result = await this.engine.clone(settings);
+      await this.log.append(
+        AuditLog.event(
+          "CLONE",
+          result.ok ? "SUCCESS" : "FAILURE",
+          result.ok ? result.message : result.error.message,
+          result.ok
+            ? this.baseCtx(settings)
+            : { ...this.baseCtx(settings), ...AuditLog.errorContext(result.error) }
+        ),
+        settings
+      );
+      new Notice(result.ok ? `✓ ${result.message}` : `✗ Clone failed: ${result.error.message}`);
+    } finally { this.releaseLock(); }
+  }
 
   async manualPull(settings: GitSyncSettings): Promise<void> {
     if (!this.acquireLock()) return;
@@ -56,7 +102,9 @@ export class SyncManager {
       await this.log.append(
         AuditLog.event(
           "COMMIT",
-          commitResult.ok ? (commitResult.message.startsWith("SKIPPED") ? "SKIPPED" : "SUCCESS") : "FAILURE",
+          commitResult.ok
+            ? (commitResult.message.startsWith("SKIPPED") ? "SKIPPED" : "SUCCESS")
+            : "FAILURE",
           commitResult.ok ? commitResult.message : commitResult.error.message,
           commitResult.ok
             ? { ...this.baseCtx(settings), sha: (commitResult as any).sha }
@@ -86,8 +134,6 @@ export class SyncManager {
 
   async startupPull(settings: GitSyncSettings): Promise<void> {
     if (!settings.pullOnStartup) return;
-
-    // Pre-flight guards — log specific reason for skips instead of silent failures
     if (!settings.remoteUrl) {
       await this.log.append(
         AuditLog.event("STARTUP_PULL", "SKIPPED", "No remote URL configured.", this.baseCtx(settings)),
@@ -102,22 +148,9 @@ export class SyncManager {
       );
       return;
     }
-
-    const isRepo = await this.engine.isRepo();
-    if (!isRepo) {
-      await this.log.append(
-        AuditLog.event(
-          "STARTUP_PULL", "SKIPPED",
-          "Vault is not a Git repo yet. Run 'Git Sync: Clone remote into vault' first.",
-          { ...this.baseCtx(settings), isRepo: false }
-        ),
-        settings
-      );
-      return;
-    }
-
     if (!this.acquireLock()) return;
     try {
+      const isRepo = await this.engine.isRepo();
       const result = await this.engine.pull(settings);
       await this.log.append(
         AuditLog.event(
@@ -125,59 +158,28 @@ export class SyncManager {
           result.ok ? "SUCCESS" : "FAILURE",
           result.ok ? result.message : result.error.message,
           result.ok
-            ? { ...this.baseCtx(settings), isRepo: true }
-            : { ...this.baseCtx(settings), isRepo: true, ...AuditLog.errorContext(result.error) }
+            ? { ...this.baseCtx(settings), isRepo }
+            : { ...this.baseCtx(settings), isRepo, ...AuditLog.errorContext(result.error) }
         ),
         settings
       );
-      if (!result.ok) new Notice(`Git Sync startup pull failed: ${result.error.message}`);
+      if (!result.ok) new Notice(`Git Sync: Startup pull failed — ${result.error.message}`);
     } finally { this.releaseLock(); }
   }
 
-  scheduleAutoSync(settings: GitSyncSettings): void {
-    if (!settings.autoSyncEnabled) return;
-    if (this.timer) clearTimeout(this.timer);
-    this.timer = setTimeout(() => this.runAutoSync(settings), settings.autoSyncDebounceMs);
+  startAutoSync(settings: GitSyncSettings): void {
+    this.stopAutoSync();
+    const debounceMs = settings.autoSyncDebounceMs ?? 5000;
+    this.vault.on("modify", () => {
+      if (this.timer) clearTimeout(this.timer);
+      this.timer = setTimeout(() => {
+        this.manualCommitAndPush(settings).catch(() => {});
+      }, debounceMs);
+    });
   }
 
-  private async runAutoSync(settings: GitSyncSettings): Promise<void> {
-    if (!this.acquireLock()) { this.scheduleAutoSync(settings); return; }
-    try {
-      const commitResult = await this.engine.commit(settings, `auto-sync @ ${new Date().toISOString()}`);
-      if (!commitResult.ok) {
-        await this.log.append(
-          AuditLog.event("AUTO_SYNC", "FAILURE", commitResult.error.message,
-            { ...this.baseCtx(settings), ...AuditLog.errorContext(commitResult.error) }),
-          settings
-        );
-        return;
-      }
-      if (commitResult.message.startsWith("SKIPPED")) return;
-
-      const pushResult = await this.engine.push(settings);
-      await this.log.append(
-        AuditLog.event(
-          "AUTO_SYNC",
-          pushResult.ok ? "SUCCESS" : "FAILURE",
-          pushResult.ok ? `${commitResult.message} → pushed` : pushResult.error.message,
-          pushResult.ok
-            ? { ...this.baseCtx(settings), sha: (commitResult as any).sha }
-            : { ...this.baseCtx(settings), ...AuditLog.errorContext(pushResult.error) }
-        ),
-        settings
-      );
-    } finally { this.releaseLock(); }
+  stopAutoSync(): void {
+    if (this.timer)   { clearTimeout(this.timer);   this.timer   = null; }
+    if (this.watcher) { clearInterval(this.watcher); this.watcher = null; }
   }
-
-  // ── Lock ───────────────────────────────────────────────────────────────────
-
-  private acquireLock(): boolean {
-    if (this.busy) { new Notice("Git Sync: An operation is already in progress."); return false; }
-    this.busy = true;
-    return true;
-  }
-
-  private releaseLock(): void { this.busy = false; }
-
-  destroy(): void { if (this.timer) clearTimeout(this.timer); }
 }

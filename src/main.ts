@@ -1,10 +1,10 @@
-import './buffer-polyfill';
-import { Plugin, Modal, App, Setting, Notice } from 'obsidian';
-import type { GitSyncSettings } from './types';
-import { DEFAULT_SETTINGS } from './types';
-import { SyncManager } from './sync-manager';
-import { GitSyncSettingsTab } from './settings-tab';
-import { handleOAuthCallback } from './oauth';
+import "./buffer-polyfill";
+import { Plugin, Modal, App, Setting, Notice } from "obsidian";
+import type { GitSyncSettings } from "./types";
+import { DEFAULT_SETTINGS } from "./types";
+import { SyncManager } from "./sync-manager";
+import { GitSyncSettingsTab } from "./settings-tab";
+import { handleOAuthCallback } from "./oauth";
 
 export type { GitSyncPlugin };
 
@@ -14,43 +14,46 @@ class GitSyncPlugin extends Plugin {
 
   async onload() {
     await this.loadSettings();
-    this.syncManager = new SyncManager(this.app.vault, this);
+    // SyncManager constructor takes only vault
+    this.syncManager = new SyncManager(this.app.vault);
 
     this.addSettingTab(new GitSyncSettingsTab(this.app, this));
 
-    this.registerObsidianProtocolHandler('git-sync-callback', params =>
-      handleOAuthCallback(params));
+    // handleOAuthCallback takes exactly 1 argument
+    this.registerObsidianProtocolHandler("git-sync-callback", (params) =>
+      handleOAuthCallback(params)
+    );
 
     this.addCommand({
-      id: 'git-sync-pull',
-      name: 'Pull',
+      id: "git-sync-pull",
+      name: "Pull",
       callback: () => this.syncManager.manualPull(this.settings),
     });
 
     this.addCommand({
-      id: 'git-sync-commit-push',
-      name: 'Commit & Push',
+      id: "git-sync-commit-push",
+      name: "Commit & Push",
       callback: () => this.syncManager.manualCommitAndPush(this.settings),
     });
 
     this.addCommand({
-      id: 'git-sync-commit-push-custom',
-      name: 'Commit & Push (custom message)',
+      id: "git-sync-commit-push-custom",
+      name: "Commit & Push (custom message)",
       callback: () =>
-        new CommitMessageModal(this.app, async msg => {
+        new CommitMessageModal(this.app, async (msg) => {
           await this.syncManager.manualCommitAndPush(this.settings, msg);
         }).open(),
     });
 
     this.addCommand({
-      id: 'git-sync-init',
-      name: 'Initialise repository',
+      id: "git-sync-init",
+      name: "Initialise repository",
       callback: () => this.syncManager.init(this.settings),
     });
 
     this.addCommand({
-      id: 'git-sync-clone',
-      name: 'Clone remote into vault',
+      id: "git-sync-clone",
+      name: "Clone remote into vault",
       callback: () => this.syncManager.clone(this.settings),
     });
 
@@ -81,7 +84,7 @@ class GitSyncPlugin extends Plugin {
 export default GitSyncPlugin;
 
 class CommitMessageModal extends Modal {
-  private value = '';
+  private value = "";
 
   constructor(app: App, private onSubmit: (msg: string) => Promise<void>) {
     super(app);
@@ -90,31 +93,30 @@ class CommitMessageModal extends Modal {
   onOpen() {
     const { contentEl } = this;
     contentEl.empty();
-    contentEl.addClass('git-sync-commit-modal');
+    contentEl.addClass("git-sync-commit-modal");
 
-    new Setting(contentEl).setName('Commit message').setHeading();
+    new Setting(contentEl).setName("Commit message").setHeading();
 
     new Setting(contentEl)
-      .setName('Message')
-      .addText(t => {
-        t.setPlaceholder('vault sync')
+      .setName("Message")
+      .addText((t) => {
+        t.setPlaceholder("vault sync")
           .setValue(this.value)
-          .onChange(v => { this.value = v; });
-        t.inputEl.addClass('git-sync-commit-input');
+          .onChange((v) => { this.value = v; });
+        t.inputEl.addClass("git-sync-commit-input");
         setTimeout(() => t.inputEl.focus(), 50);
       });
 
     new Setting(contentEl)
-      .addButton(btn => btn
-        .setButtonText('Commit & Push')
-        .setCta()
-        .onClick(async () => {
+      .addButton((btn) =>
+        btn.setButtonText("Commit & Push").setCta().onClick(async () => {
           this.close();
-          await this.onSubmit(this.value.trim() || 'vault sync');
-        }))
-      .addButton(btn => btn
-        .setButtonText('Cancel')
-        .onClick(() => this.close()));
+          await this.onSubmit(this.value.trim() || "vault sync");
+        })
+      )
+      .addButton((btn) =>
+        btn.setButtonText("Cancel").onClick(() => this.close())
+      );
   }
 
   onClose() {
