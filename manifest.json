@@ -1,9 +1,9 @@
 {
-  "id": "yet-another-plugin",
-  "name": "Yet Another Plugin",
-  "version": "1.0.2",
+  "id": "yet-another-all-in-one",
+  "name": "Yet Another All-In-One",
+  "version": "1.0.3",
   "minAppVersion": "1.5.0",
-  "description": "Local-first, cross-platform Git synchronization using isomorphic-git. No native binaries — works on desktop and Android.",
+  "description": "Yet Another All-In-One Obsidian plugin. Git sync, and more.",
   "author": "cmdaeo",
   "authorUrl": "https://github.com/cmdaeo",
   "fundingUrl": "",

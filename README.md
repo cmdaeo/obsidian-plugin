@@ -1,9 +1,16 @@
-# YAP — Yet Another Plugin
+# Yet Another All-In-One
 
-Local-first, cross-platform Git synchronization for Obsidian. No proprietary cloud, no native binaries — works on Windows and Android.
+> Because one plugin is never enough.
 
-## Features
+A growing all-in-one Obsidian plugin. No bloat, no fluff — just the features you actually want, in one place.
 
+## Modules
+
+### Git Sync
+
+Local-first, cross-platform Git synchronization. No proprietary cloud, no native binaries — works on Windows and Android.
+
+**Features**
 - **isomorphic-git** — pure JavaScript Git engine
 - **Android-safe** — uses Obsidian's `requestUrl` instead of raw `fetch`
 - **Auto-sync** — debounced commit & push on file changes
@@ -13,15 +20,15 @@ Local-first, cross-platform Git synchronization for Obsidian. No proprietary clo
 ## Installation
 
 1. Download `main.js`, `manifest.json`, `styles.css` from the latest GitHub release
-2. Copy to `.obsidian/plugins/yet-another-plugin/` in your vault
+2. Copy to `.obsidian/plugins/yet-another-all-in-one/` in your vault
 3. Enable in **Settings → Community Plugins**
 
-## Setup
+## Setup (Git Sync)
 
-1. **Settings → YAP**
+1. **Settings → Yet Another All-In-One**
 2. Set Remote URL (e.g. `https://github.com/user/vault.git`)
 3. Connect with GitHub OAuth or paste a Personal Access Token
-4. Run **YAP: Clone remote into vault** (first time) or **YAP: Initialise repository** (existing vault)
+4. Run **Yet Another All-In-One: Clone remote into vault** (first time) or **Yet Another All-In-One: Initialise repository** (existing vault)
 
 ## Releasing a new version
 

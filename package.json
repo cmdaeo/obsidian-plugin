@@ -1,7 +1,7 @@
 {
-  "name": "yet-another-plugin",
-  "version": "1.0.2",
-  "description": "Local-first Git synchronization for Obsidian using isomorphic-git.",
+  "name": "yet-another-all-in-one",
+  "version": "1.0.3",
+  "description": "Yet Another All-In-One Obsidian plugin.",
   "main": "release/main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",

@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to YAP (Yet Another Plugin) are documented here.  
+All notable changes to Yet Another All-In-One are documented here.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [1.0.1] — 2026-06-21
@@ -8,7 +8,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 - Initial release
-- isomorphic-git engine (pure JS, no native binaries)
+- Git Sync module: isomorphic-git engine (pure JS, no native binaries)
 - Cross-platform: Windows desktop and Android
 - Obsidian `requestUrl` HTTP adapter — replaces `fetch`, bypasses mobile CSP
 - Node-compatible FS adapter with proper `isDirectory`, `isFile`, `stat` methods
