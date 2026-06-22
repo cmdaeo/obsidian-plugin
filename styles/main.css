@@ -1,171 +1,43 @@
-/* ─────────────────────────────────────────────────────────────────────────────
-   Git Sync Plugin — Styles
-   All layout uses Obsidian CSS variables for theme compatibility.
-───────────────────────────────────────────────────────────────────────────── */
+/* ── Git Sync styles — replaces all inline style assignments ─────────────── */
 
-/* ── Auth card (connected state) ─────────────────────────────────────────── */
-.git-sync-auth-card {
-  display: flex;
-  align-items: center;
-  gap: var(--size-4-3);
-  padding: var(--size-4-3) var(--size-4-4);
-  border-radius: var(--radius-m);
-  margin-bottom: var(--size-4-3);
-  border: 1px solid var(--background-modifier-border);
-  background: var(--background-secondary);
-}
-
-.git-sync-auth-connected {
-  border-color: var(--color-green);
-}
-
-.git-sync-auth-badge {
-  flex-shrink: 0;
-}
-
-.git-sync-auth-provider {
-  display: inline-block;
-  font-size: var(--font-smaller);
-  font-weight: var(--font-semibold);
-  padding: 2px 8px;
-  border-radius: var(--radius-s);
-  background: var(--interactive-accent);
-  color: var(--text-on-accent);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.git-sync-auth-info {
-  flex: 1;
-  font-size: var(--font-small);
-  line-height: 1.6;
-}
-
-.git-sync-auth-meta {
-  color: var(--text-muted);
-  font-size: var(--font-smaller);
-}
-
-.git-sync-revoke-btn {
-  flex-shrink: 0;
-  cursor: pointer;
-  font-size: var(--font-small);
-  padding: var(--size-2-2) var(--size-4-2);
-  border-radius: var(--radius-s);
-  border: 1px solid var(--background-modifier-border);
-  background: var(--background-primary);
-  color: var(--text-error);
-  transition: background 120ms ease;
-}
-.git-sync-revoke-btn:hover {
-  background: var(--background-modifier-error);
-}
-
-/* ── Auth button row (disconnected state) ────────────────────────────────── */
-.git-sync-auth-desc {
-  margin-bottom: var(--size-4-3);
-  color: var(--text-muted);
-}
-
-.git-sync-auth-btn-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--size-4-2);
-  margin-top: var(--size-4-3);
-  margin-bottom: var(--size-4-4);
-}
-
-.git-sync-auth-btn {
-  cursor: pointer;
-  padding: var(--size-2-3) var(--size-4-3);
-  border-radius: var(--radius-s);
-  border: 1px solid var(--background-modifier-border);
-  background: var(--background-secondary);
-  color: var(--text-normal);
-  font-size: var(--font-small);
-  font-weight: var(--font-medium);
-  transition: background 120ms ease, border-color 120ms ease;
-}
-.git-sync-auth-btn:hover:not(:disabled) {
-  background: var(--background-modifier-hover);
-  border-color: var(--interactive-accent);
-}
-.git-sync-auth-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* ── Device flow modal ────────────────────────────────────────────────────── */
-.git-sync-device-modal .modal-content {
-  min-width: 380px;
-  max-width: 480px;
-}
-
-.git-sync-device-code {
-  display: flex;
-  align-items: center;
-  gap: var(--size-4-3);
-  margin: var(--size-4-4) 0;
-  padding: var(--size-4-3) var(--size-4-4);
-  border-radius: var(--radius-m);
-  background: var(--background-secondary);
-  border: 1px solid var(--background-modifier-border);
-}
-
-.git-sync-device-code span {
-  flex: 1;
-  font-family: var(--font-monospace);
-  font-size: 2rem;
-  font-weight: var(--font-bold);
-  letter-spacing: 0.2em;
-  color: var(--text-accent);
-  user-select: all;
-}
-
-.git-sync-status {
-  color: var(--text-muted);
-  font-size: var(--font-small);
-  margin-top: var(--size-4-3);
-}
-
-/* ── Gitea PAT modal ─────────────────────────────────────────────────────── */
-.git-sync-full-input {
+.git-sync-commit-modal .git-sync-commit-input {
   width: 100%;
-  margin-top: var(--size-2-2);
-  padding: var(--size-2-3) var(--size-4-2);
-  border-radius: var(--radius-s);
-  border: 1px solid var(--background-modifier-border);
-  background: var(--background-primary);
-  color: var(--text-normal);
-  font-size: var(--font-small);
 }
 
-.git-sync-btn-row {
+.git-sync-waiting-modal {
+  --modal-width: 480px;
+}
+
+.git-sync-waiting-content {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
   gap: var(--size-4-2);
-  margin-top: var(--size-4-4);
+  padding: var(--size-4-4) 0;
 }
 
-/* ── Waiting for browser modal ───────────────────────────────────────────── */
-.git-sync-waiting-modal .modal-content {
-  min-width: 360px;
-  max-width: 460px;
+.git-sync-waiting-title {
+  font-size: var(--font-ui-medium);
+  font-weight: var(--font-semibold);
+  margin: 0 0 var(--size-2-2);
 }
 
-.git-sync-waiting-indicator {
+.git-sync-waiting-status {
   display: flex;
   align-items: center;
   gap: var(--size-4-2);
-  margin: var(--size-4-4) 0;
   color: var(--text-muted);
-  font-size: var(--font-small);
+  font-size: var(--font-ui-smaller);
+}
+
+.git-sync-cancel-btn {
+  margin-top: var(--size-4-2);
+  cursor: pointer;
 }
 
 .git-sync-spinner {
   display: inline-block;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border: 2px solid var(--background-modifier-border);
   border-top-color: var(--interactive-accent);
   border-radius: 50%;
@@ -177,17 +49,7 @@
   to { transform: rotate(360deg); }
 }
 
-.git-sync-cancel-btn {
-  cursor: pointer;
-  margin-top: var(--size-4-2);
-  padding: var(--size-2-2) var(--size-4-2);
-  border-radius: var(--radius-s);
-  border: 1px solid var(--background-modifier-border);
-  background: var(--background-primary);
-  color: var(--text-muted);
-  font-size: var(--font-small);
-}
-.git-sync-cancel-btn:hover {
-  background: var(--background-modifier-hover);
-  color: var(--text-normal);
+.git-sync-gitea-modal input[type="text"],
+.git-sync-gitea-modal input[type="password"] {
+  width: 100%;
 }
