@@ -56,7 +56,7 @@ jobs:
           [ -z "$NOTES" ] && NOTES="Release $TAG"
           gh release create "$TAG" \
             --repo "$GITHUB_REPOSITORY" \
-            --title "Vault Git Sync $TAG" \
+            --title "Git Sync $TAG" \
             --notes "$NOTES" \
             release/main.js \
             release/manifest.json \
